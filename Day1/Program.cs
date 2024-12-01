@@ -6,9 +6,16 @@ class Program
     {
         
         Console.WriteLine(SolveFile("C:\\Users\\yuval\\RiderProjects\\AdventOfCode2024\\Day1\\input.txt"));
+        Console.WriteLine(SolveFile2("C:\\Users\\yuval\\RiderProjects\\AdventOfCode2024\\Day1\\input.txt"));
     }
 
     private static int SolveFile(string inputFile)
+    {
+        var (left, right) = GetNumbers(inputFile);
+        return left.Order().Zip(right.Order(), (x, y) => Math.Abs(x - y)).Sum();
+    }
+
+    private static (List<int> left, List<int> right) GetNumbers(string inputFile)
     {
         var lines = System.IO.File.ReadAllLines(inputFile);
         List<int> left = new();
@@ -19,6 +26,39 @@ class Program
             left.Add(int.Parse(values[0]));
             right.Add(int.Parse(values[1]));
         }
-        return left.Order().Zip(right.Order(), (x, y) => Math.Abs(x - y)).Sum();
+
+        return (left, right);
+    }
+
+    private static int SolveFile2(string inputFile)
+    {
+        var (left, right) = GetNumbers(inputFile);
+        Histogram<int> rightHistorgram = new();
+        foreach (var num in right)
+        {
+            rightHistorgram.IncrementCount(num);
+        }
+
+        return left.Select(x => x * rightHistorgram.GetCount(x)).Sum();
+    }
+}
+
+public class Histogram<TVal> : Dictionary<TVal, int>
+{
+    public void IncrementCount(TVal binToIncrement)
+    {
+        if (ContainsKey(binToIncrement))
+        {
+            this[binToIncrement]++;
+        }
+        else
+        {
+            Add(binToIncrement, 1);
+        }
+    }
+
+    public int GetCount(TVal binToGet)
+    {
+        return ContainsKey(binToGet) ? this[binToGet] : 0;
     }
 }
