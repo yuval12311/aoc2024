@@ -7,8 +7,8 @@ class Program
     public static void Main(string[] args)
     {
         
-        Console.WriteLine(SolveFile("C:\\Users\\yuval\\RiderProjects\\AdventOfCode2024\\Day2\\input.txt", IsSafeLevel));
-        Console.WriteLine(SolveFile("C:\\Users\\yuval\\RiderProjects\\AdventOfCode2024\\Day2\\input.txt", IsSafeLevel2));
+        Console.WriteLine(SolveFile("..\\..\\..\\\\input.txt", IsSafeLevel));
+        Console.WriteLine(SolveFile("..\\..\\..\\\\input.txt", IsSafeLevel2));
     }
 
     private static int SolveFile(string inputPath, Func<List<int>, bool> condition)

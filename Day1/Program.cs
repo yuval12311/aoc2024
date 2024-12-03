@@ -5,8 +5,8 @@ class Program
     public static void Main(string[] args)
     {
         
-        Console.WriteLine(SolveFile("C:\\Users\\yuval\\RiderProjects\\AdventOfCode2024\\Day1\\input.txt"));
-        Console.WriteLine(SolveFile2("C:\\Users\\yuval\\RiderProjects\\AdventOfCode2024\\Day1\\input.txt"));
+        Console.WriteLine(SolveFile("..\\..\\..\\input.txt"));
+        Console.WriteLine(SolveFile2("..\\..\\..\\input.txt"));
     }
 
     private static int SolveFile(string inputFile)
