@@ -9,8 +9,6 @@ class Program
     {
         Console.WriteLine(SolveFile("..\\..\\..\\\\input.txt"));
         Console.WriteLine(SolveFile2("..\\..\\..\\\\input.txt"));
-
-    
     }
 
     private static int SolveFile2(string inputFile)
@@ -31,7 +29,6 @@ class Program
                         default:
                             return isDo ? int.Parse(match.Groups[1].Value) * int.Parse(match.Groups[2].Value) : 0;
                     }
-
                     return 0;
                 }
             )
