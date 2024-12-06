@@ -17,14 +17,21 @@ class Program
     
     
     
-    private static int SolveFile(string inputFile)
+    private static (int, int) SolveFile(string inputFile)
     {
-        Dictionary<(int i, int j), HashSet<int>> visited = new();
-        HashSet<(int i, int j)> possibleObst = new();
+        
+        
         (int[,] grid, (int i, int j) currentPosition, int dir)  = ParseFile(inputFile);
+        return SimulateWalk(currentPosition, grid, dir);
+    }
+
+    private static (int, int) SimulateWalk((int i, int j) currentPosition, int[,] grid,  int dir)
+    {
+        var visited = new Dictionary<(int i, int j), HashSet<int>>();
+        var possibleObst = new HashSet<(int i, int j)>();
         while (IsInBounds(currentPosition, grid))
         {
-            if (visited.ContainsKey(currentPosition))
+            if (!visited.ContainsKey(currentPosition))
             {
                 visited[currentPosition] = new();
             }
@@ -36,13 +43,85 @@ class Program
             }
             else if (IsInBounds(nextPos, grid) && grid[nextPos.i, nextPos.j] == 0)
             {
+                grid[nextPos.i, nextPos.j] = 2;
+                if (!visited.ContainsKey(nextPos) && CheckLoop(grid, currentPosition, dir))
+                {
+                    possibleObst.Add(nextPos);
+                }
+                grid[nextPos.i, nextPos.j] = 0;
+                currentPosition = nextPos;
+            }
+            else
+            {
                 currentPosition = nextPos;
             }
             //PrintGrid(grid, currentPosition, dir);
             //Thread.Sleep(100);
         }
 
-        return visited.Count;
+        return (visited.Count, possibleObst.Count);
+    }
+
+    private static bool CheckLoop(int[,] grid, (int i, int j) currentPosition, int dir)
+    {
+        var visited = new Dictionary<(int i, int j), HashSet<int>>();
+        while (IsInBounds(currentPosition, grid))
+        {
+            if (!visited.ContainsKey(currentPosition))
+            {
+                visited[currentPosition] = new();
+            }
+            visited[currentPosition].Add(dir);
+            (currentPosition, dir) = MakeMove(grid, currentPosition, dir);
+            if (visited.ContainsKey(currentPosition) && visited[currentPosition].Contains(dir))
+            {
+                return true;
+            }
+            //PrintGrid(grid, currentPosition, dir, visited);
+            //Thread.Sleep(100);
+        }
+        return false;
+    }
+
+    private static void PrintGrid(int[,] grid, (int i, int j) currentPosition, int dir, Dictionary<(int i, int j),HashSet<int>> visited)
+    {
+        Console.SetCursorPosition(0, 0);
+        for (int i = 0; i < grid.GetLength(0); ++i)
+        {
+            for (int j = 0; j < grid.GetLength(1); j++)
+            {
+                if (currentPosition.i == i && currentPosition.j == j)
+                {
+                    Console.Write(dir switch {0 => '^', 1 => '>', 2 => 'v', 3 => '<', _ => ' '});
+                }
+                else if (grid[i,j] > 0)
+                {
+                    Console.Write(grid[i, j] == 1 ? '#' : 'O');
+                }
+                else if (visited.ContainsKey((i, j)))
+                {
+                    var dirs = visited[(i, j)];
+                    bool horiz = dirs.Contains(1) ||  dirs.Contains(3);
+                    bool vert = dirs.Contains(0) ||  dirs.Contains(2);
+                    Console.Write( horiz && vert ? '+' : (horiz ? '-' : '|'));
+                }
+                else
+                {
+                    Console.Write('.');
+                }
+            }
+            Console.WriteLine();
+        }
+    }
+
+    private static ((int i, int j) pos, int dir) MakeMove(int[,] grid, (int i, int j) currentPosition, int dir)
+    {
+        (int i, int j) nextPos = (currentPosition.i + GetI(dir), currentPosition.j + GetJ(dir));
+        if (IsInBounds(nextPos, grid) && grid[nextPos.i, nextPos.j] > 0)
+        {
+            return (currentPosition, (dir + 1) % 4);
+        }
+        return (nextPos, dir);
     }
 
     private static void PrintGrid(int[,] grid, (int i, int j) currentPosition, int dir)
