@@ -55,8 +55,8 @@ class Program
             {
                 currentPosition = nextPos;
             }
-            //PrintGrid(grid, currentPosition, dir);
-            //Thread.Sleep(100);
+            PrintGrid(grid, currentPosition, dir);
+            Thread.Sleep(50);
         }
 
         return (visited.Count, possibleObst.Count);
@@ -77,8 +77,8 @@ class Program
             {
                 return true;
             }
-            //PrintGrid(grid, currentPosition, dir, visited);
-            //Thread.Sleep(100);
+            PrintGrid(grid, currentPosition, dir, visited);
+            Thread.Sleep(50);
         }
         return false;
     }
