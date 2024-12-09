@@ -31,7 +31,9 @@ class Program
         int maxI = text.Length - 1;
         int maxJ = text[0].Length - 1;
         var vecs = text
-            .SelectMany((line, i) => line.Select((c, j) => new { Char = c, Point = new Vector2<int>(i, j) }))
+            .SelectMany((line, i) => 
+                line.Select((c, j) => 
+                    new { Char = c, Point = new Vector2<int>(i, j) }))
             .Where(t => t.Char != '.')
             .GroupBy(t => t.Char)
             .SelectMany(g =>
