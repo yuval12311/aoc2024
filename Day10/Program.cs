@@ -29,7 +29,7 @@ class Program
                 }
             }
         }
-        return trailHeads.Select(coord => Score(map, coord)).Sum();
+        return trailHeads.Select(coord => Raiting(map, coord)).Sum();
     }
 
     private static int Score(int[,] map, (int i, int j) trailHead)
@@ -66,6 +66,41 @@ class Program
             AddPeaksRec(map, (coord.i, coord.j - 1), peaks);
         }
     }
+    
+    private static int Raiting(int[,] map, (int i, int j) trailHead)
+    {
+        return CountPeaksRec(map, trailHead);
+        
+    }
+    
+    private static int CountPeaksRec(int[,] map, (int i, int j) coord)
+    {
+        if (!InBounds(map, coord)) return 0;
+        int height = map[coord.i, coord.j];
+        if (height == 9)
+        {
+            return 1 ;
+        }
+        int count = 0;
+        if (InBounds(map, (coord.i+1, coord.j)) && map[coord.i + 1, coord.j] == height + 1)
+        {
+            count += CountPeaksRec(map, (coord.i + 1, coord.j));
+        }
+        if (InBounds(map, (coord.i-1, coord.j)) &&map[coord.i - 1, coord.j] == height + 1)
+        {
+            count += CountPeaksRec(map, (coord.i - 1, coord.j));
+        }
+        if (InBounds(map, (coord.i, coord.j + 1)) &&map[coord.i, coord.j + 1] == height + 1)
+        {
+            count += CountPeaksRec(map, (coord.i , coord.j + 1));
+        }
+        if (InBounds(map, (coord.i, coord.j -1)) && map[coord.i, coord.j - 1] == height + 1)
+        {
+            count += CountPeaksRec(map, (coord.i, coord.j - 1));
+        }
+        return count;
+    }
+
 
     private static bool InBounds(int[,] map, (int i, int j) coord)
     {
