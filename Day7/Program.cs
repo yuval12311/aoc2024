@@ -5,11 +5,11 @@ class Program
 {
     static void Main(string[] args)
     {
-        var t = new TimeOnly();
+        var t = DateTime.Now;
 
         Console.WriteLine(SolveFile("..\\..\\..\\\\input.txt"));
 
-        Console.WriteLine((new TimeOnly() - t).TotalNanoseconds);
+        Console.WriteLine((DateTime.Now - t));
     }
 
     private static long SolveFile(string inputTxt)
