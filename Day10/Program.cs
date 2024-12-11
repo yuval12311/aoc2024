@@ -12,8 +12,8 @@ class Program
 
         Console.WriteLine((DateTime.Now - t));
     }
-
-    private static int SolveFile(string inputFile)
+  
+    private static int SolveFile(string inputFile)  
     {
         string[] lines = File.ReadAllLines(inputFile);
         int[,] map = new int[lines.Length, lines[0].Length];
