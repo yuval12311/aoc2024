@@ -22,25 +22,40 @@ class Program
 
     private static long CountStones(int arg)
     {
-        return CountStones(arg, 25);
+        Dictionary<(long, int), long> memo = new Dictionary<(long, int), long>();
+        return CountStones(arg, 75, memo);
     }
 
-    private static long CountStones(long stone, int blinks)
+    private static long CountStones(long stone, int blinks, Dictionary<(long, int), long> memo)
     {
+         
         if (blinks == 0)
         {
             return 1;
         }
-        else if (stone == 0)
+
+        if (memo.ContainsKey((stone, blinks)))
         {
-            return CountStones(1, blinks - 1);
+            return memo[(stone, blinks)];
+        }
+
+        long res;
+        if (stone == 0)
+        {
+            res = CountStones(1, blinks - 1, memo);
         }
         else if (SplitNum(stone, out long left, out long right))
         {
-            return CountStones(left, blinks - 1) + CountStones(right, blinks - 1);
+            res = CountStones(left, blinks - 1, memo) + CountStones(right, blinks - 1, memo);
         }
-        return CountStones(stone * 2024, blinks - 1);
-        
+        else
+        {
+            res = CountStones(stone * 2024, blinks - 1, memo);
+        }
+
+        memo[(stone, blinks)] = res;
+        return res;
+
     }
 
     private static bool SplitNum(long stone, out long left, out long right)
