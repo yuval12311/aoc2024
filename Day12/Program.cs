@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Xml.Schema;
 
 namespace Day12;
 
@@ -8,7 +9,7 @@ class Program
     {
         var t = new TimeOnly();
 
-        Console.WriteLine(SolveFile("..\\..\\..\\\\input.txt"));
+        Console.WriteLine(SolveFile2("..\\..\\..\\\\input.txt"));
         //Console.WriteLine(SolveFile2("..\\..\\..\\\\input.txt"));
         
         Console.WriteLine((new TimeOnly() - t).TotalNanoseconds);
@@ -132,5 +133,75 @@ class Program
 
         Console.WriteLine(string.Join("\n", regions.Values.Select(reg => new {reg.Count, reg.Perimiter, reg.Letter})));
         return regions.Values.Sum(region => (long)region.Perimiter * region.Count);
+    }
+    
+    private static long SolveFile2(string inputFile)
+    {
+       
+        Dictionary<int, Region> regions = new();
+        var lines = File.ReadAllLines(inputFile);
+        DisjointSetUBR regionSets = new(lines.Length * lines[0].Length);
+        for (int i = 0; i < lines.Length; i++)
+        {
+            for (int j = 0; j < lines[i].Length; j++)
+            {
+                bool top = i > 0 && lines[i][j] == lines[i - 1][j];
+                bool left = j > 0 && lines[i][j] == lines[i][j - 1];
+                bool topLeft = i > 0 && j > 0 && lines[i][j] == lines[i - 1][j - 1];
+                bool topRight =i > 0 &&  j < lines.Length - 1 && lines[i][j] == lines[i - 1][j + 1];
+                regionSets.MakeSet(i*lines.Length + j);
+                regions.Add(i * lines.Length + j, new Region() { Perimiter = 4, Count = 1, Letter = lines[i][j] });
+                if (top) JoinUp(i, j, regionSets, lines ,regions);
+                if (left) JoinLeft(i, j, regionSets, lines ,regions);
+                if (!top && !left)
+                {
+                    continue;
+                }
+                Region current = regions[regionSets.FindPath(i * lines.Length + j)];
+                if (top && left && !topLeft)
+                {
+                    current.Perimiter += topRight ? -4 : -6;
+                }
+                else if (top && left && topLeft)
+                {
+                    current.Perimiter += -4 + (topRight ? 0 : -2);
+                }
+                else if (!left)
+                {
+                    if (!top || !topLeft || !topRight)
+                        current.Perimiter += top ^ topLeft ^ topRight ? -4 : -2;
+                    
+                } else if (!top)
+                {
+                    current.Perimiter += topLeft ? -2 : -4;
+                }
+            }
+        }
+
+        Console.WriteLine(string.Join("\n", regions.Values.Select(reg => new {reg.Count, reg.Perimiter, reg.Letter})));
+        return regions.Values.Sum(region => (long)region.Perimiter * region.Count);
+    }
+
+    private static void JoinLeft(int i, int j, DisjointSetUBR regionSets, string[] lines, Dictionary<int, Region> regions)
+    {
+        Join(i *lines[0].Length + j , i *lines[0].Length + j - 1, regionSets, regions);
+    }
+    private static void JoinUp(int i, int j, DisjointSetUBR regionSets, string[] lines, Dictionary<int, Region> regions)
+    {
+        Join(i *lines[0].Length + j , (i - 1) *lines[0].Length + j, regionSets, regions);
+    }
+
+    private static void Join(int i, int j, DisjointSetUBR regionSets, Dictionary<int, Region> regions)
+    {
+        var rep1 = regionSets.FindPath(i );
+        var rep2 = regionSets.FindPath(j);
+        int styingRep;
+        if ((styingRep = regionSets.Union(i, j)) > -1 )
+        {
+            int otherRep = styingRep == rep2 ? rep1 : rep2;
+            regions[styingRep].Count += regions[otherRep].Count;
+            regions[styingRep].Perimiter += regions[otherRep].Perimiter;
+            regions.Remove(otherRep);
+        }
     }
 }
