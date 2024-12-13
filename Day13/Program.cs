@@ -43,7 +43,7 @@ class Program
                 return pair.matrix.Inverse() * pair.vector;
             })
             .Where(vec => IsInt(vec.X) && IsInt(vec.Y))
-            .Select(vec => 3 * (int)vec.X + (int)vec.Y)
+            .Select(vec => 3 * (long)vec.X + (long)vec.Y)
             .Sum();
         
     }
@@ -103,7 +103,7 @@ class Program
             new Regex(@"Button A: X\+(\d+), Y\+(\d+)\r\nButton B: X\+(\d+), Y\+(\d+)\r\nPrize: X=(\d+), Y=(\d+)");
         return regex.Matches(txt)
             .Select(match =>
-                match.Groups.OfType<Group>().Skip(1).Select(group => int.Parse(group.Value)).ToList())
+                match.Groups.OfType<Group>().Skip(1).Select(group => long.Parse(group.Value)).ToList())
             .Select(intValue =>
             {
                 Console.WriteLine("got values: " + string.Join(", ", intValue));
@@ -112,7 +112,7 @@ class Program
                         intValue[0], intValue[2],
                         intValue[1], intValue[3]
                     ),
-                    new RationalVector(intValue[4], intValue[5]));
+                    new RationalVector(10000000000000 + intValue[4],10000000000000 + intValue[5]));
             });
     }
 }
