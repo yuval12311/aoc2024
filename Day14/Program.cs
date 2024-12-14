@@ -1,4 +1,5 @@
 ﻿using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Day14;
@@ -9,9 +10,75 @@ class Program
     {
         var t = new TimeOnly();
 
-        Console.WriteLine(SolveFile("..\\..\\..\\\\input.txt"));
-
+        //Console.WriteLine(SolveFile("..\\..\\..\\\\input.txt"));
+        SolveFile2("..\\..\\..\\\\input.txt");
         Console.WriteLine((new TimeOnly() - t).TotalNanoseconds);
+    }
+
+    private static void SolveFile2(string inputFile)
+    {
+        var robots = File.ReadAllLines(inputFile)
+            .Select(ParseLine)
+            .ToList();
+        ConsoleKey key;
+        int moves = 82;
+
+        robots.ForEach(robot => robot.Move(82));
+        PrintSpace(robots);
+        Console.WriteLine(moves);
+        while ((key = Console.ReadKey(true).Key) != ConsoleKey.Escape)
+        {
+            if (key == ConsoleKey.RightArrow)
+            {
+                robots.ForEach(robot => robot.Move(101));
+                moves += 101;
+            }
+            else if (key == ConsoleKey.LeftArrow)
+            {
+                robots.ForEach(robot => robot.Move(-101));
+                moves -= 101;
+            }
+            PrintSpace(robots);
+            Console.WriteLine(moves);
+        }
+    }
+
+    private static void PrintSpace(List<Robot> robots)
+    {
+        Console.SetCursorPosition(0, 0);
+        int[,] space = new int[Robot.SPACE_Y, Robot.SPACE_X];
+        foreach (var robot in robots)
+        {
+            space[robot._py, robot._px]++;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int y = 0; y < Robot.SPACE_Y; y++)
+        {
+            /*if (y == Robot.SPACE_Y / 2)
+            {
+                Console.WriteLine();
+                continue;
+            }*/
+            for (int x = 0; x < Robot.SPACE_X; x++)
+            {
+                /*if (x == Robot.SPACE_X / 2)
+                {
+                    Console.Write(' ');
+
+                }
+                else*/ if (space[y, x] == 0)
+                {
+                    sb.Append('.');
+                }
+                else
+                {
+                    sb.Append(space[y, x]);
+                }
+            }
+
+            sb.AppendLine();
+        }
+        Console.WriteLine(sb);
     }
 
     private static int SolveFile(string inputFile)
@@ -87,16 +154,18 @@ class Program
             int.Parse(m.Groups[3].Value), int.Parse(m.Groups[4].Value));
     }
 
-    private record struct Robot(int px, int py, int vx, int vy)
+    private class Robot(int px, int py, int vx, int vy)
     {
+        public int _px = px;
+        public int _py = py;
         public static int SPACE_X = 101;
         public static int SPACE_Y = 103;
 
         public (int x, int y) Move(int steps)
         {
-            px = Mod(px + steps * vx, SPACE_X);
-            py = Mod(py + steps * vy, SPACE_Y);
-            return (px, py);
+            _px = Mod(_px + steps * vx, SPACE_X);
+            _py = Mod(_py + steps * vy, SPACE_Y);
+            return ( _px, _py);
         }
     }
 
