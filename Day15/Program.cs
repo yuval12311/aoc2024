@@ -58,9 +58,9 @@ class Program
         foreach (var dir in moves)
         {
             (robotI, robotJ) = MakeMove2(map, dir, ref robotI, ref robotJ);
-            //PrintMap2(map);
-            //Console.WriteLine(dir);
-            //Thread.Sleep(200);
+            PrintMap2(map);
+            Console.WriteLine(dir);
+            Thread.Sleep(2);
             //Console.ReadKey();
         }
 
